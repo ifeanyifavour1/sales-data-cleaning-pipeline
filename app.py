@@ -1,3 +1,4 @@
+import pandas
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -13,6 +14,8 @@ def home():
 
         if not file.filename.lower().endswith(".csv"):
             return "Please upload a CSV file."
+
+        sales_data = pandas.read_csv(file)
 
         return "CSV file uploaded successfully."
 
