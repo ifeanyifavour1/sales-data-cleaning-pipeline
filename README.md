@@ -1,2 +1,5 @@
 # sales-data-cleaning-pipeline
-A Python/Flask web tool that cleans messy sales data — upload a CSV, normalize product names and dates, remove duplicates, and download a clean file. Built as a course project and foundation for a larger final-year thesis on small business inventory forecasting.
+
+A simple Flask web app for cleaning messy sales CSV files. The app is being built to let users upload a CSV file, preview the data, clean product names, standardize date formats, remove duplicate rows, and download the cleaned file.
+
+The project uses Python, Flask and Pandas and was created for my Introduction to Software Engineering course.
