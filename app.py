@@ -15,9 +15,12 @@ def home():
         if not file.filename.lower().endswith(".csv"):
             return "Please upload a CSV file."
 
-        sales_data = pandas.read_csv(file)
+        try:
+            sales_data = pandas.read_csv(file)
+        except Exception:
+            return "Could not read the CSV file."
 
-        return "CSV file uploaded successfully."
+        return "CSV file read successfully."
 
     return render_template("index.html")
 
