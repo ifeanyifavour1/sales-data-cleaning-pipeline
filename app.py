@@ -1,7 +1,10 @@
 import pandas
 from flask import Flask, render_template, request
 
+from cleaning import clean_product_names
+
 app = Flask(__name__)
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -23,10 +26,34 @@ def home():
         except Exception:
             return "Could not read the CSV file."
 
-        # Show the first 10 rows
-        preview = sales_data.head(10)
+        # Raw preview - first 10 rows
+        preview = sales_data.head(10).to_html(index=False)
 
-        return preview.to_html(index=False)
+        # Get each column and its first 3 values
+        column_rows = []
+
+        for column in sales_data.columns:
+            sample_values = (
+                sales_data[column]
+                .head(3)
+                .fillna("")
+                .astype(str)
+                .tolist()
+            )
+
+            column_rows.append({
+                "Column": column,
+                "Sample values": ", ".join(sample_values)
+            })
+
+        # Create a small table showing column names and sample values
+        columns_preview = pandas.DataFrame(column_rows).to_html(index=False)
+
+        return render_template(
+            "review.html",
+            preview=preview,
+            columns_preview=columns_preview
+        )
 
     return render_template("index.html")
 
