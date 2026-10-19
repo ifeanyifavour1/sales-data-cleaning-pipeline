@@ -3,18 +3,119 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Review Sales Data</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
 
-    <h1>Review Sales Data</h1>
+    <div class="page">
 
-    <h2>Raw Data Preview</h2>
-    {{ preview | safe }}
+        <div class="app-header">
+            <div class="logo">SD</div>
 
-    <h2>Columns Found</h2>
-    {{ columns_preview | safe }}
+            <div>
+                <h1 class="app-title">Sales Data Cleaner</h1>
+                <p class="subtitle">
+                    Review your original data before cleaning.
+                </p>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step done">✓ Upload</div>
+            <div class="step active">2. Preview</div>
+            <div class="step">3. Clean</div>
+            <div class="step">4. Download</div>
+        </div>
+
+        <div class="card">
+
+            <span class="tag">Original Data</span>
+
+            <h2>Data Preview</h2>
+
+            <p class="info-text">
+                These are the first rows of the file you uploaded.
+                The original data has not been changed.
+            </p>
+
+            <div class="table-wrap">
+                {{ preview | safe }}
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Columns Found</h2>
+
+            <p class="info-text">
+                These are the columns found in your file with a few sample values.
+            </p>
+
+            <div class="table-wrap">
+                {{ columns_preview | safe }}
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Choose Product Column</h2>
+
+            <p class="info-text">
+                Select the column that contains the product names.
+            </p>
+
+            <form
+                action="/clean-product-names"
+                method="POST"
+            >
+
+                <input
+                    type="hidden"
+                    name="file_id"
+                    value="{{ file_id }}"
+                >
+
+                <label for="product_column">
+                    Product column:
+                </label>
+
+                <select
+                    id="product_column"
+                    name="product_column"
+                    required
+                >
+
+                    <option value="">
+                        Choose a column
+                    </option>
+
+                    {% for column in columns %}
+                        <option value="{{ column }}">
+                            {{ column }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit">
+                    Clean Product Names
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </body>
 

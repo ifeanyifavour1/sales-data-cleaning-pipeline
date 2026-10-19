@@ -3,29 +3,78 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Data Cleaner</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
 
-    <h1>Sales Data Cleaner</h1>
+    <div class="page">
 
-    <p>Upload your CSV file to begin.</p>
+        <div class="app-header">
+            <div class="logo">SD</div>
 
-    <form method="POST" enctype="multipart/form-data">
+            <div>
+                <h1 class="app-title">Sales Data Cleaner</h1>
+                <p class="subtitle">Clean messy sales data safely.</p>
+            </div>
+        </div>
 
-        <label for="csv_file">Choose CSV file:</label>
+        <div class="steps">
+            <div class="step active">1. Upload</div>
+            <div class="step">2. Preview</div>
+            <div class="step">3. Clean</div>
+            <div class="step">4. Download</div>
+        </div>
 
-        <input
-            type="file"
-            id="csv_file"
-            name="csv_file"
-            accept=".csv"
-        >
+        <div class="card">
 
-        <button type="submit">Upload</button>
+            <h2>Upload your sales file</h2>
 
-    </form>
+            <p class="info-text">
+                Upload a CSV or Excel file to begin.
+            </p>
+
+            <form
+                action="/"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <div class="upload-box">
+
+                    <label for="data_file">
+                        Choose your file
+                    </label>
+
+                    <br>
+
+                    <input
+                        type="file"
+                        id="data_file"
+                        name="data_file"
+                        accept=".csv,.xlsx"
+                        required
+                    >
+
+                    <br>
+
+                    <button type="submit">
+                        Upload File
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </body>
 
