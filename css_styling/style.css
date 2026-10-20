@@ -1,0 +1,210 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #17203a;
+}
+
+.page {
+    width: 90%;
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.app-title {
+    margin: 0;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0 35px;
+    gap: 10px;
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    background: #e5e7eb;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.step.active {
+    background: #2563eb;
+    color: white;
+}
+
+.step.done {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.upload-box {
+    border: 2px dashed #93c5fd;
+    border-radius: 14px;
+    padding: 35px;
+    text-align: center;
+    background: #f8fbff;
+}
+
+input[type="file"] {
+    margin: 20px 0;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    margin-right: 10px;
+    min-width: 200px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table.dataframe {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table.dataframe th,
+table.dataframe td {
+    border: 1px solid #dbe1ea;
+    padding: 10px;
+    text-align: left;
+}
+
+table.dataframe th {
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+
+table.dataframe tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.before-card {
+    border-left: 4px solid #f59e0b;
+}
+
+.after-card {
+    border-left: 4px solid #10b981;
+}
+
+.tag {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.info-text {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.action-area {
+    margin-top: 20px;
+}
+
+@media (max-width: 700px) {
+    .page {
+        width: 94%;
+        margin-top: 20px;
+    }
+
+    .steps {
+        flex-direction: column;
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .app-title {
+        font-size: 22px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    select {
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    button {
+        width: 100%;
+    }
+}
