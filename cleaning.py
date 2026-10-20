@@ -1,14 +1,16 @@
-def clean_product_names(receive_data, product_column):
+def clean_product_names(sales_data, product_column):
     # Work on a copy so the original data stays unchanged
-    data_to_clean = receive_data.copy()
+    cleaned_data = sales_data.copy()
 
-    data_to_clean[product_column] = (
-        data_to_clean[product_column]
+    cleaned_data[product_column] = (
+        cleaned_data[product_column]
         .fillna("")
         .astype(str)
         .str.strip()
+        .str.replace(r"[^\w\s&'/+.\-]", "", regex=True)
+        .str.replace("_", " ", regex=False)
         .str.replace(r"\s+", " ", regex=True)
         .str.title()
     )
 
-    return data_to_clean
+    return cleaned_data
