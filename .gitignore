@@ -1,0 +1,5 @@
+__pycache__/
+temp_uploads/
+venv/
+*.pyc
+messy produvt
