@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Review Sales Data</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
     <div class="page">
@@ -22,9 +15,7 @@
 
             <div>
                 <h1 class="app-title">Sales Data Cleaner</h1>
-                <p class="subtitle">
-                    Review your original data before cleaning.
-                </p>
+                <p class="subtitle">Review your original data before cleaning.</p>
             </div>
         </div>
 
@@ -36,7 +27,6 @@
         </div>
 
         <div class="card">
-
             <span class="tag">Original Data</span>
 
             <h2>Data Preview</h2>
@@ -49,11 +39,9 @@
             <div class="table-wrap">
                 {{ preview | safe }}
             </div>
-
         </div>
 
         <div class="card">
-
             <h2>Columns Found</h2>
 
             <p class="info-text">
@@ -63,60 +51,61 @@
             <div class="table-wrap">
                 {{ columns_preview | safe }}
             </div>
-
         </div>
 
         <div class="card">
-
             <h2>Choose Product Column</h2>
 
             <p class="info-text">
                 Select the column that contains the product names.
             </p>
 
-            <form
-                action="/clean-product-names"
-                method="POST"
-            >
+            <form action="/clean-product-names" method="POST">
 
-                <input
-                    type="hidden"
-                    name="file_id"
-                    value="{{ file_id }}"
-                >
+                <input type="hidden" name="file_id" value="{{ file_id }}">
 
-                <label for="product_column">
-                    Product column:
-                </label>
+                <label for="product_column">Product column:</label>
 
-                <select
-                    id="product_column"
-                    name="product_column"
-                    required
-                >
-
-                    <option value="">
-                        Choose a column
-                    </option>
+                <select id="product_column" name="product_column" required>
+                    <option value="">Choose a column</option>
 
                     {% for column in columns %}
-                        <option value="{{ column }}">
-                            {{ column }}
-                        </option>
+                        <option value="{{ column }}">{{ column }}</option>
                     {% endfor %}
-
                 </select>
 
-                <button type="submit">
-                    Clean Product Names
-                </button>
+                <button type="submit">Clean Product Names</button>
 
             </form>
+        </div>
 
+        <div class="card">
+            <h2>Choose Date Column</h2>
+
+            <p class="info-text">
+                Select the column that contains the sales dates.
+            </p>
+
+            <form action="/clean-sales-dates" method="POST">
+
+                <input type="hidden" name="file_id" value="{{ file_id }}">
+
+                <label for="date_column">Date column:</label>
+
+                <select id="date_column" name="date_column" required>
+                    <option value="">Choose a column</option>
+
+                    {% for column in columns %}
+                        <option value="{{ column }}">{{ column }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Clean Sales Dates</button>
+
+            </form>
         </div>
 
     </div>
 
 </body>
-
 </html>

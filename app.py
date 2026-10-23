@@ -4,12 +4,13 @@ from uuid import uuid4
 import pandas
 from flask import Flask, render_template, request
 
-from cleaning import clean_product_names
+from cleaning_logics.product_names import clean_product_names
+from cleaning_logics.dates import clean_sales_dates
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="css_styling")
 
-# Keep uploaded data temporarily while the user moves to the next page
+# Keep uploaded data temporarily while the user moves between pages
 TEMP_FOLDER = Path("temp_uploads")
 TEMP_FOLDER.mkdir(exist_ok=True)
 
@@ -18,8 +19,7 @@ TEMP_FOLDER.mkdir(exist_ok=True)
 def home():
 
     if request.method == "POST":
-
-    
+        file = request.files.get("data_file")
 
         # Check that the user actually selected a file
         if file is None or file.filename == "":
@@ -66,7 +66,7 @@ def home():
             column_rows
         ).to_html(index=False)
 
-        # Save a temporary copy for the next cleaning step
+        # Save a temporary copy for the cleaning steps
         file_id = uuid4().hex
         temporary_file = TEMP_FOLDER / f"{file_id}.csv"
 
@@ -89,23 +89,21 @@ def clean_product_column():
     file_id = request.form.get("file_id")
     product_column = request.form.get("product_column")
 
-    # Make sure a product column was selected
     if not file_id or not product_column:
         return "Please select the column that contains product names."
 
     temporary_file = TEMP_FOLDER / f"{file_id}.csv"
 
-    # Make sure the temporary uploaded data still exists
     if not temporary_file.exists():
         return "The uploaded file could not be found. Please upload it again."
 
     try:
         sales_data = pandas.read_csv(temporary_file)
+
     except Exception as error:
         print("TEMP FILE ERROR:", error)
         return "Could not read the uploaded data."
 
-    # Check that the selected column is really in the file
     if product_column not in sales_data.columns:
         return "The selected column was not found."
 
@@ -115,26 +113,84 @@ def clean_product_column():
         product_column
     )
 
-    # Show the selected column before cleaning
     before_preview = (
         sales_data[[product_column]]
         .head(10)
         .to_html(index=False)
     )
 
-    # Show the same column after cleaning
     after_preview = (
         cleaned_data[[product_column]]
         .head(10)
         .to_html(index=False)
     )
 
-    # Show part of the full cleaned dataset
-    cleaned_preview = cleaned_data.head(10).to_html(index=False)
+    cleaned_preview = (
+        cleaned_data
+        .head(10)
+        .to_html(index=False)
+    )
 
     return render_template(
         "product_cleaning_result.html",
         product_column=product_column,
+        before_preview=before_preview,
+        after_preview=after_preview,
+        cleaned_preview=cleaned_preview
+    )
+
+
+@app.route("/clean-sales-dates", methods=["POST"])
+def clean_date_column():
+
+    file_id = request.form.get("file_id")
+    date_column = request.form.get("date_column")
+
+    if not file_id or not date_column:
+        return "Please select the column that contains the sales dates."
+
+    temporary_file = TEMP_FOLDER / f"{file_id}.csv"
+
+    if not temporary_file.exists():
+        return "The uploaded file could not be found. Please upload it again."
+
+    try:
+        sales_data = pandas.read_csv(temporary_file)
+
+    except Exception as error:
+        print("TEMP FILE ERROR:", error)
+        return "Could not read the uploaded data."
+
+    if date_column not in sales_data.columns:
+        return "The selected date column was not found."
+
+    # Clean the selected date column
+    cleaned_data = clean_sales_dates(
+        sales_data,
+        date_column
+    )
+
+    before_preview = (
+        sales_data[[date_column]]
+        .head(10)
+        .to_html(index=False)
+    )
+
+    after_preview = (
+        cleaned_data[[date_column]]
+        .head(10)
+        .to_html(index=False)
+    )
+
+    cleaned_preview = (
+        cleaned_data
+        .head(10)
+        .to_html(index=False)
+    )
+
+    return render_template(
+        "date_cleaning_result.html",
+        date_column=date_column,
         before_preview=before_preview,
         after_preview=after_preview,
         cleaned_preview=cleaned_preview
