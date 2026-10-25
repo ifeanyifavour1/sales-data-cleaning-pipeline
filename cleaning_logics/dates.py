@@ -30,7 +30,7 @@ def clean_one_date(value):
         except ValueError:
             pass
 
-    # dates written with month names
+    # Dates written with month names
     written_date_formats = [
         "%d %B %Y",
         "%d %b %Y",
@@ -49,7 +49,7 @@ def clean_one_date(value):
 
     # Dates such as 23/07/2025 or 07/23/2025
     number_date = re.fullmatch(
-    r"(\d{1,2})[./-](\d{1,2})[./-](\d{4})",
+        r"(\d{1,2})[./-](\d{1,2})[./-](\d{4})",
         date_text
     )
 
