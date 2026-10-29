@@ -11,7 +11,6 @@ def clean_sales_data(
     product_columns=None,
     date_columns=None,
 ):
-    # Work on a copy so the original uploaded data stays unchanged
     cleaned_data = sales_data.copy()
 
     if product_columns is None:
@@ -22,7 +21,7 @@ def clean_sales_data(
 
     rows_before = len(cleaned_data)
 
-    # Clean every product column selected by the user
+    # Clean product-name columns
     for column in product_columns:
         if column not in cleaned_data.columns:
             raise ValueError(
@@ -34,7 +33,7 @@ def clean_sales_data(
             column
         )
 
-    # Clean every date column selected by the user
+    # Clean date columns
     for column in date_columns:
         if column not in cleaned_data.columns:
             raise ValueError(
@@ -51,7 +50,6 @@ def clean_sales_data(
         cleaned_data
     )
 
-    # Remove rows that are completely identical
     cleaned_data = remove_duplicate_rows(
         cleaned_data
     )
@@ -64,6 +62,8 @@ def clean_sales_data(
         "duplicates_removed": int(duplicate_count),
         "product_columns_cleaned": len(product_columns),
         "date_columns_cleaned": len(date_columns),
+        "product_columns": product_columns,
+        "date_columns": date_columns,
     }
 
     return cleaned_data, summary
