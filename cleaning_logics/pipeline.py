@@ -1,4 +1,5 @@
 from cleaning_logics.product_names import clean_product_names
+from cleaning_logics.text import clean_text_columns
 from cleaning_logics.dates import clean_sales_dates
 from cleaning_logics.duplicates import (
     count_duplicate_rows,
@@ -9,12 +10,16 @@ from cleaning_logics.duplicates import (
 def clean_sales_data(
     sales_data,
     product_columns=None,
+    text_columns=None,
     date_columns=None,
 ):
     cleaned_data = sales_data.copy()
 
     if product_columns is None:
         product_columns = []
+
+    if text_columns is None:
+        text_columns = []
 
     if date_columns is None:
         date_columns = []
@@ -31,6 +36,13 @@ def clean_sales_data(
         cleaned_data = clean_product_names(
             cleaned_data,
             column
+        )
+
+    # Clean normal text columns
+    if text_columns:
+        cleaned_data = clean_text_columns(
+            cleaned_data,
+            text_columns
         )
 
     # Clean date columns
@@ -60,9 +72,13 @@ def clean_sales_data(
         "rows_before": rows_before,
         "rows_after": rows_after,
         "duplicates_removed": int(duplicate_count),
+
         "product_columns_cleaned": len(product_columns),
+        "text_columns_cleaned": len(text_columns),
         "date_columns_cleaned": len(date_columns),
+
         "product_columns": product_columns,
+        "text_columns": text_columns,
         "date_columns": date_columns,
     }
 
