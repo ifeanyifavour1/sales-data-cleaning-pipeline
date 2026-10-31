@@ -4,13 +4,15 @@ from uuid import uuid4
 import pandas
 from flask import Flask, render_template, request
 
-from cleaning_logics.product_names import clean_product_names
-from cleaning_logics.dates import clean_sales_dates
+from cleaning_logics.detection import detect_columns
+from cleaning_logics.pipeline import clean_sales_data
 
 
-app = Flask(__name__, static_folder="css_styling")
+app = Flask(
+    __name__,
+    static_folder="css_styling"
+)
 
-# Keep uploaded data temporarily while the user moves between pages
 TEMP_FOLDER = Path("temp_uploads")
 TEMP_FOLDER.mkdir(exist_ok=True)
 
@@ -19,181 +21,238 @@ TEMP_FOLDER.mkdir(exist_ok=True)
 def home():
 
     if request.method == "POST":
-        file = request.files.get("data_file")
 
-        # Check that the user actually selected a file
+        file = request.files.get(
+            "data_file"
+        )
+
         if file is None or file.filename == "":
             return "Please select a file."
 
         filename = file.filename.lower()
 
-        # Read CSV or Excel file
         try:
+
             if filename.endswith(".csv"):
-                sales_data = pandas.read_csv(file)
+                sales_data = pandas.read_csv(
+                    file
+                )
 
             elif filename.endswith(".xlsx"):
-                sales_data = pandas.read_excel(file)
+                sales_data = pandas.read_excel(
+                    file
+                )
 
             else:
                 return "Please upload a CSV or Excel file."
 
         except Exception as error:
-            print("READ ERROR:", error)
+
+            print(
+                "READ ERROR:",
+                error
+            )
+
             return "Could not read the uploaded file."
 
-        # Show the first 10 rows of the original data
-        preview = sales_data.head(10).to_html(index=False)
+        preview = (
+            sales_data
+            .head(10)
+            .to_html(index=False)
+        )
 
-        # Show a few values from every column
-        column_rows = []
+        # Detect every column
+        detected_columns = detect_columns(
+            sales_data
+        )
 
-        for column in sales_data.columns:
+        # Add sample values and suggested actions
+        for result in detected_columns:
+
+            column = result["column"]
+
             sample_values = (
                 sales_data[column]
+                .dropna()
                 .head(3)
-                .fillna("")
                 .astype(str)
                 .tolist()
             )
 
-            column_rows.append({
-                "Column": column,
-                "Sample values": ", ".join(sample_values)
-            })
+            result["sample_values"] = (
+                ", ".join(sample_values)
+            )
 
-        columns_preview = pandas.DataFrame(
-            column_rows
-        ).to_html(index=False)
+            detected_type = result["type"]
 
-        # Save a temporary copy for the cleaning steps
+            if detected_type == "product":
+                result["suggested_action"] = "product"
+
+            elif detected_type == "text":
+                result["suggested_action"] = "text"
+
+            elif detected_type == "date":
+                result["suggested_action"] = "date"
+
+            else:
+                # Numbers, identifiers and unknown columns
+                # are preserved for now
+                result["suggested_action"] = "keep"
+
         file_id = uuid4().hex
-        temporary_file = TEMP_FOLDER / f"{file_id}.csv"
 
-        sales_data.to_csv(temporary_file, index=False)
+        temporary_file = (
+            TEMP_FOLDER /
+            f"{file_id}.csv"
+        )
+
+        sales_data.to_csv(
+            temporary_file,
+            index=False
+        )
 
         return render_template(
             "review.html",
             preview=preview,
-            columns_preview=columns_preview,
-            columns=sales_data.columns.tolist(),
+            detected_columns=detected_columns,
             file_id=file_id
         )
 
-    return render_template("index.html")
+    return render_template(
+        "index.html"
+    )
 
 
-@app.route("/clean-product-names", methods=["POST"])
-def clean_product_column():
+@app.route(
+    "/clean-data",
+    methods=["POST"]
+)
+def clean_all_data():
 
-    file_id = request.form.get("file_id")
-    product_column = request.form.get("product_column")
+    file_id = request.form.get(
+        "file_id"
+    )
 
-    if not file_id or not product_column:
-        return "Please select the column that contains product names."
+    if not file_id:
+        return "The uploaded file could not be found."
 
-    temporary_file = TEMP_FOLDER / f"{file_id}.csv"
+    temporary_file = (
+        TEMP_FOLDER /
+        f"{file_id}.csv"
+    )
 
     if not temporary_file.exists():
-        return "The uploaded file could not be found. Please upload it again."
+        return (
+            "The uploaded file could not be found. "
+            "Please upload it again."
+        )
 
     try:
-        sales_data = pandas.read_csv(temporary_file)
+        sales_data = pandas.read_csv(
+            temporary_file
+        )
 
     except Exception as error:
-        print("TEMP FILE ERROR:", error)
+
+        print(
+            "TEMP FILE ERROR:",
+            error
+        )
+
         return "Could not read the uploaded data."
 
-    if product_column not in sales_data.columns:
-        return "The selected column was not found."
+    column_names = request.form.getlist(
+        "column_name"
+    )
 
-    # Clean the selected product column
-    cleaned_data = clean_product_names(
-        sales_data,
-        product_column
+    cleaning_actions = request.form.getlist(
+        "clean_action"
+    )
+
+    if len(column_names) != len(
+        cleaning_actions
+    ):
+        return (
+            "The cleaning selections "
+            "could not be read correctly."
+        )
+
+    product_columns = []
+    text_columns = []
+    date_columns = []
+    preserved_columns = []
+
+    for column, action in zip(
+        column_names,
+        cleaning_actions
+    ):
+
+        if column not in sales_data.columns:
+            return (
+                f"Column '{column}' "
+                "was not found."
+            )
+
+        if action == "product":
+            product_columns.append(
+                column
+            )
+
+        elif action == "text":
+            text_columns.append(
+                column
+            )
+
+        elif action == "date":
+            date_columns.append(
+                column
+            )
+
+        elif action == "keep":
+            preserved_columns.append(
+                column
+            )
+
+        else:
+            return (
+                f"Unknown cleaning action "
+                f"for '{column}'."
+            )
+
+    try:
+
+        cleaned_data, summary = clean_sales_data(
+            sales_data,
+            product_columns=product_columns,
+            text_columns=text_columns,
+            date_columns=date_columns
+        )
+
+    except ValueError as error:
+        return str(error)
+
+    summary["preserved_columns"] = (
+        preserved_columns
     )
 
     before_preview = (
-        sales_data[[product_column]]
+        sales_data
         .head(10)
         .to_html(index=False)
     )
 
     after_preview = (
-        cleaned_data[[product_column]]
-        .head(10)
-        .to_html(index=False)
-    )
-
-    cleaned_preview = (
         cleaned_data
         .head(10)
         .to_html(index=False)
     )
 
     return render_template(
-        "product_cleaning_result.html",
-        product_column=product_column,
+        "cleaning_result.html",
         before_preview=before_preview,
         after_preview=after_preview,
-        cleaned_preview=cleaned_preview
-    )
-
-
-@app.route("/clean-sales-dates", methods=["POST"])
-def clean_date_column():
-
-    file_id = request.form.get("file_id")
-    date_column = request.form.get("date_column")
-
-    if not file_id or not date_column:
-        return "Please select the column that contains the sales dates."
-
-    temporary_file = TEMP_FOLDER / f"{file_id}.csv"
-
-    if not temporary_file.exists():
-        return "The uploaded file could not be found. Please upload it again."
-
-    try:
-        sales_data = pandas.read_csv(temporary_file)
-
-    except Exception as error:
-        print("TEMP FILE ERROR:", error)
-        return "Could not read the uploaded data."
-
-    if date_column not in sales_data.columns:
-        return "The selected date column was not found."
-
-    # Clean the selected date column
-    cleaned_data = clean_sales_dates(
-        sales_data,
-        date_column
-    )
-
-    before_preview = (
-        sales_data[[date_column]]
-        .head(10)
-        .to_html(index=False)
-    )
-
-    after_preview = (
-        cleaned_data[[date_column]]
-        .head(10)
-        .to_html(index=False)
-    )
-
-    cleaned_preview = (
-        cleaned_data
-        .head(10)
-        .to_html(index=False)
-    )
-
-    return render_template(
-        "date_cleaning_result.html",
-        date_column=date_column,
-        before_preview=before_preview,
-        after_preview=after_preview,
-        cleaned_preview=cleaned_preview
+        summary=summary,
+        file_id=file_id
     )
 
 

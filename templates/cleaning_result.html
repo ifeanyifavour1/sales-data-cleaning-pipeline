@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cleaning Result</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="app-header">
+
+        <div class="logo">
+            SD
+        </div>
+
+        <div>
+
+            <h1 class="app-title">
+                Sales Data Cleaner
+            </h1>
+
+            <p class="subtitle">
+                Review the result after cleaning your sales data.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="steps">
+
+        <div class="step done">
+            ✓ Upload
+        </div>
+
+        <div class="step done">
+            ✓ Preview
+        </div>
+
+        <div class="step active">
+            3. Clean
+        </div>
+
+        <div class="step">
+            4. Download
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="tag">
+            Cleaning Complete
+        </span>
+
+        <h2>
+            Cleaning Summary
+        </h2>
+
+
+        <div class="cleaning-summary">
+
+            <div class="summary-item">
+                <p>Rows Before</p>
+                <strong>
+                    {{ summary.rows_before }}
+                </strong>
+            </div>
+
+
+            <div class="summary-item">
+                <p>Rows After</p>
+                <strong>
+                    {{ summary.rows_after }}
+                </strong>
+            </div>
+
+
+            <div class="summary-item">
+                <p>Product Columns</p>
+                <strong>
+                    {{ summary.product_columns_cleaned }}
+                </strong>
+            </div>
+
+
+            <div class="summary-item">
+                <p>Text Columns</p>
+                <strong>
+                    {{ summary.text_columns_cleaned }}
+                </strong>
+            </div>
+
+
+            <div class="summary-item">
+                <p>Date Columns</p>
+                <strong>
+                    {{ summary.date_columns_cleaned }}
+                </strong>
+            </div>
+
+
+            <div class="summary-item">
+                <p>Duplicates Removed</p>
+                <strong>
+                    {{ summary.duplicates_removed }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        {% if summary.product_columns %}
+
+        <p class="info-text">
+
+            <strong>
+                Product columns cleaned:
+            </strong>
+
+            {{ summary.product_columns | join(", ") }}
+
+        </p>
+
+        {% endif %}
+
+
+        {% if summary.text_columns %}
+
+        <p class="info-text">
+
+            <strong>
+                Text columns cleaned:
+            </strong>
+
+            {{ summary.text_columns | join(", ") }}
+
+        </p>
+
+        {% endif %}
+
+
+        {% if summary.date_columns %}
+
+        <p class="info-text">
+
+            <strong>
+                Date columns cleaned:
+            </strong>
+
+            {{ summary.date_columns | join(", ") }}
+
+        </p>
+
+        {% endif %}
+
+
+        {% if summary.preserved_columns %}
+
+        <p class="info-text">
+
+            <strong>
+                Columns kept unchanged:
+            </strong>
+
+            {{ summary.preserved_columns | join(", ") }}
+
+        </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="card before-card">
+
+        <span class="tag">
+            Before
+        </span>
+
+        <h2>
+            Original Data
+        </h2>
+
+        <div class="table-wrap">
+            {{ before_preview | safe }}
+        </div>
+
+    </div>
+
+
+    <div class="card after-card">
+
+        <span class="tag">
+            After
+        </span>
+
+        <h2>
+            Cleaned Data
+        </h2>
+
+        <div class="table-wrap">
+            {{ after_preview | safe }}
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

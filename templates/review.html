@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Review Sales Data</title>
 
@@ -10,226 +16,263 @@
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
     >
+
 </head>
 
 <body>
 
-    <div class="page">
+<div class="page">
 
-        <!-- Application heading -->
-        <div class="app-header">
+    <div class="app-header">
 
-            <div class="logo">
-                SD
-            </div>
-
-            <div>
-                <h1 class="app-title">
-                    Sales Data Cleaner
-                </h1>
-
-                <p class="subtitle">
-                    Review your original data and choose what you want to clean.
-                </p>
-            </div>
-
+        <div class="logo">
+            SD
         </div>
 
+        <div>
 
-        <!-- Progress steps -->
-        <div class="steps">
+            <h1 class="app-title">
+                Sales Data Cleaner
+            </h1>
 
-            <div class="step done">
-                ✓ Upload
-            </div>
-
-            <div class="step active">
-                2. Preview
-            </div>
-
-            <div class="step">
-                3. Clean
-            </div>
-
-            <div class="step">
-                4. Download
-            </div>
-
-        </div>
-
-
-        <!-- Original data preview -->
-        <div class="card">
-
-            <span class="tag">
-                Original Data
-            </span>
-
-            <h2>
-                Data Preview
-            </h2>
-
-            <p class="info-text">
-                These are the first rows of the file you uploaded.
-                The original data has not been changed.
+            <p class="subtitle">
+                Review what the system detected before cleaning your data.
             </p>
-
-            <div class="table-wrap">
-                {{ preview | safe }}
-            </div>
-
-        </div>
-
-
-        <!-- Columns found -->
-        <div class="card">
-
-            <h2>
-                Columns Found
-            </h2>
-
-            <p class="info-text">
-                These are the columns found in your file with a few sample values.
-            </p>
-
-            <div class="table-wrap">
-                {{ columns_preview | safe }}
-            </div>
-
-        </div>
-
-
-        <!-- Cleaning controls -->
-        <div class="card">
-
-            <h2>
-                Choose What to Clean
-            </h2>
-
-            <p class="info-text">
-                Select the columns that need cleaning.
-                You can choose one column or several columns at the same time.
-            </p>
-
-
-            <form action="/clean-data" method="POST">
-
-                <input
-                    type="hidden"
-                    name="file_id"
-                    value="{{ file_id }}"
-                >
-
-
-                <!-- Product columns -->
-                <div class="cleaning-group">
-
-                    <h3>
-                        Product Name Columns
-                    </h3>
-
-                    <p class="info-text">
-                        Choose the columns that contain product names.
-                    </p>
-
-                    <div class="column-options">
-
-                        {% for column in columns %}
-
-                            <label class="column-option">
-
-                                <input
-                                    type="checkbox"
-                                    name="product_columns"
-                                    value="{{ column }}"
-                                >
-
-                                <span>
-                                    {{ column }}
-                                </span>
-
-                            </label>
-
-                        {% endfor %}
-
-                    </div>
-
-                </div>
-
-
-                <!-- Date columns -->
-                <div class="cleaning-group">
-
-                    <h3>
-                        Date Columns
-                    </h3>
-
-                    <p class="info-text">
-                        Choose the columns that contain dates.
-                    </p>
-
-                    <div class="column-options">
-
-                        {% for column in columns %}
-
-                            <label class="column-option">
-
-                                <input
-                                    type="checkbox"
-                                    name="date_columns"
-                                    value="{{ column }}"
-                                >
-
-                                <span>
-                                    {{ column }}
-                                </span>
-
-                            </label>
-
-                        {% endfor %}
-
-                    </div>
-
-                </div>
-
-
-                <!-- Automatic cleaning -->
-                <div class="cleaning-group">
-
-                    <h3>
-                        Automatic Cleaning
-                    </h3>
-
-                    <p class="info-text">
-                        Exact duplicate rows will also be checked and removed
-                        automatically after the selected columns have been cleaned.
-                    </p>
-
-                </div>
-
-
-                <!-- Clean button -->
-                <div class="clean-actions">
-
-                    <button
-                        type="submit"
-                        class="clean-all-button"
-                    >
-                        Clean All
-                    </button>
-
-                    <p class="info-text">
-                        The application will run the cleaning rules that apply
-                        to the columns you selected.
-                    </p>
-
-                </div>
-
-            </form>
 
         </div>
 
     </div>
 
+
+    <div class="steps">
+
+        <div class="step done">
+            ✓ Upload
+        </div>
+
+        <div class="step active">
+            2. Preview
+        </div>
+
+        <div class="step">
+            3. Clean
+        </div>
+
+        <div class="step">
+            4. Download
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="tag">
+            Original Data
+        </span>
+
+        <h2>
+            Data Preview
+        </h2>
+
+        <p class="info-text">
+            These are the first rows of the uploaded file.
+            The original data has not been changed.
+        </p>
+
+        <div class="table-wrap">
+            {{ preview | safe }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            Review Detected Columns
+        </h2>
+
+        <p class="info-text">
+            The system checked the column names, data types and
+            sample values to suggest how each column should be handled.
+            You can change the cleaning action if needed.
+        </p>
+
+
+        <form
+            action="/clean-data"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="file_id"
+                value="{{ file_id }}"
+            >
+
+
+            <div class="table-wrap">
+
+                <table class="column-cleaning-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Column</th>
+                            <th>Sample Values</th>
+                            <th>Detected Type</th>
+                            <th>Confidence</th>
+                            <th>Cleaning Action</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for column in detected_columns %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    {{ column.column }}
+                                </strong>
+
+                                <input
+                                    type="hidden"
+                                    name="column_name"
+                                    value="{{ column.column }}"
+                                >
+
+                            </td>
+
+
+                            <td class="sample-values">
+
+                                {{ column.sample_values }}
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="type-badge">
+                                    {{ column.type | title }}
+                                </span>
+
+                                <div class="detection-reason">
+                                    {{ column.reason }}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="confidence-badge confidence-{{ column.confidence }}"
+                                >
+                                    {{ column.confidence | title }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <select
+                                    name="clean_action"
+                                    class="clean-type-select"
+                                >
+
+                                    <option
+                                        value="keep"
+                                        {% if column.suggested_action == "keep" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Keep unchanged
+                                    </option>
+
+
+                                    <option
+                                        value="product"
+                                        {% if column.suggested_action == "product" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Clean as product name
+                                    </option>
+
+
+                                    <option
+                                        value="text"
+                                        {% if column.suggested_action == "text" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Clean as text
+                                    </option>
+
+
+                                    <option
+                                        value="date"
+                                        {% if column.suggested_action == "date" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Clean as date
+                                    </option>
+
+                                </select>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="cleaning-group">
+
+                <h3>
+                    Automatic Cleaning
+                </h3>
+
+                <p class="info-text">
+                    Exact duplicate rows will be checked and removed
+                    after the selected cleaning actions are finished.
+                </p>
+
+            </div>
+
+
+            <div class="clean-actions">
+
+                <button
+                    type="submit"
+                    class="clean-all-button"
+                >
+                    Clean All
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
 </body>
+
 </html>
