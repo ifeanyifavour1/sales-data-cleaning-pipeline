@@ -54,11 +54,11 @@
             ✓ Preview
         </div>
 
-        <div class="step active">
-            3. Clean
+        <div class="step done">
+            ✓ Clean
         </div>
 
-        <div class="step">
+        <div class="step active">
             4. Download
         </div>
 
@@ -220,6 +220,38 @@
         <div class="table-wrap">
             {{ after_preview | safe }}
         </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="tag">
+            Download
+        </span>
+
+        <h2>
+            Download Cleaned Data
+        </h2>
+
+        <p class="info-text">
+            The complete cleaned dataset is ready.
+            Download it as a CSV file.
+        </p>
+
+        <form
+            action="{{ url_for('download_cleaned_csv', file_id=file_id) }}"
+            method="GET"
+        >
+
+            <button
+                type="submit"
+                class="clean-all-button"
+            >
+                Download Cleaned CSV
+            </button>
+
+        </form>
 
     </div>
 
