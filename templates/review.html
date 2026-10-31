@@ -112,7 +112,7 @@
             >
 
 
-            <div class="table-wrap">
+            <div class="table-wrap review-table-wrap">
 
                 <table class="column-cleaning-table">
 
@@ -183,51 +183,108 @@
 
                             <td>
 
-                                <select
-                                    name="clean_action"
-                                    class="clean-type-select"
-                                >
+                                <div class="custom-clean-select">
 
-                                    <option
-                                        value="keep"
-                                        {% if column.suggested_action == "keep" %}
-                                            selected
-                                        {% endif %}
+                                    <input
+                                        type="hidden"
+                                        name="clean_action"
+                                        class="clean-action-value"
+                                        value="{{ column.suggested_action }}"
                                     >
-                                        Keep unchanged
-                                    </option>
 
 
-                                    <option
-                                        value="product"
-                                        {% if column.suggested_action == "product" %}
-                                            selected
-                                        {% endif %}
+                                    <button
+                                        type="button"
+                                        class="custom-select-trigger"
+                                        aria-expanded="false"
+                                        aria-controls="clean-menu-{{ loop.index }}"
                                     >
-                                        Clean as product name
-                                    </option>
+
+                                        <span class="custom-select-label">
+
+                                            {% if column.suggested_action == "product" %}
+
+                                                Clean as product name
+
+                                            {% elif column.suggested_action == "text" %}
+
+                                                Clean as text
+
+                                            {% elif column.suggested_action == "date" %}
+
+                                                Clean as date
+
+                                            {% else %}
+
+                                                Keep unchanged
+
+                                            {% endif %}
+
+                                        </span>
 
 
-                                    <option
-                                        value="text"
-                                        {% if column.suggested_action == "text" %}
-                                            selected
-                                        {% endif %}
+                                        <span class="custom-select-arrow">
+                                            ▼
+                                        </span>
+
+                                    </button>
+
+
+                                    <div
+                                        class="custom-select-menu"
+                                        id="clean-menu-{{ loop.index }}"
                                     >
-                                        Clean as text
-                                    </option>
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'keep' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="keep"
+                                        >
+                                            Keep unchanged
+                                        </button>
 
 
-                                    <option
-                                        value="date"
-                                        {% if column.suggested_action == "date" %}
-                                            selected
-                                        {% endif %}
-                                    >
-                                        Clean as date
-                                    </option>
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'product' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="product"
+                                        >
+                                            Clean as product name
+                                        </button>
 
-                                </select>
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'text' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="text"
+                                        >
+                                            Clean as text
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'date' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="date"
+                                        >
+                                            Clean as date
+                                        </button>
+
+                                    </div>
+
+                                </div>
 
                             </td>
 
@@ -272,6 +329,183 @@
     </div>
 
 </div>
+
+
+<script>
+
+    function closeCleaningDropdown(dropdown) {
+
+        dropdown.classList.remove(
+            "open"
+        );
+
+        const trigger =
+            dropdown.querySelector(
+                ".custom-select-trigger"
+            );
+
+        trigger.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+
+    document
+        .querySelectorAll(
+            ".custom-clean-select"
+        )
+        .forEach(function (dropdown) {
+
+            const trigger =
+                dropdown.querySelector(
+                    ".custom-select-trigger"
+                );
+
+            const label =
+                dropdown.querySelector(
+                    ".custom-select-label"
+                );
+
+            const hiddenInput =
+                dropdown.querySelector(
+                    ".clean-action-value"
+                );
+
+            const options =
+                dropdown.querySelectorAll(
+                    ".custom-select-option"
+                );
+
+
+            trigger.addEventListener(
+                "click",
+                function () {
+
+                    const wasOpen =
+                        dropdown.classList.contains(
+                            "open"
+                        );
+
+
+                    document
+                        .querySelectorAll(
+                            ".custom-clean-select"
+                        )
+                        .forEach(function (otherDropdown) {
+
+                            closeCleaningDropdown(
+                                otherDropdown
+                            );
+
+                        });
+
+
+                    if (!wasOpen) {
+
+                        dropdown.classList.add(
+                            "open"
+                        );
+
+                        trigger.setAttribute(
+                            "aria-expanded",
+                            "true"
+                        );
+                    }
+                }
+            );
+
+
+            options.forEach(
+                function (option) {
+
+                    option.addEventListener(
+                        "click",
+                        function () {
+
+                            hiddenInput.value =
+                                option.dataset.value;
+
+                            label.textContent =
+                                option.textContent.trim();
+
+
+                            options.forEach(
+                                function (otherOption) {
+
+                                    otherOption.classList.remove(
+                                        "selected-option"
+                                    );
+
+                                }
+                            );
+
+
+                            option.classList.add(
+                                "selected-option"
+                            );
+
+
+                            closeCleaningDropdown(
+                                dropdown
+                            );
+                        }
+                    );
+
+                }
+            );
+
+        });
+
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                !event.target.closest(
+                    ".custom-clean-select"
+                )
+            ) {
+
+                document
+                    .querySelectorAll(
+                        ".custom-clean-select"
+                    )
+                    .forEach(function (dropdown) {
+
+                        closeCleaningDropdown(
+                            dropdown
+                        );
+
+                    });
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+
+                document
+                    .querySelectorAll(
+                        ".custom-clean-select"
+                    )
+                    .forEach(function (dropdown) {
+
+                        closeCleaningDropdown(
+                            dropdown
+                        );
+
+                    });
+            }
+        }
+    );
+
+</script>
 
 </body>
 
