@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Data Cleaner</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="page">
+
+        <div class="app-header">
+            <div class="logo">SD</div>
+
+            <div>
+                <h1 class="app-title">Sales Data Cleaner</h1>
+                <p class="subtitle">Clean messy sales data safely.</p>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step active">1. Upload</div>
+            <div class="step">2. Preview</div>
+            <div class="step">3. Clean</div>
+            <div class="step">4. Download</div>
+        </div>
+
+        <div class="card">
+
+            <h2>Upload your sales file</h2>
+
+            <p class="info-text">
+                Upload a CSV or Excel file to begin.
+            </p>
+
+            <form
+                action="/"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <div class="upload-box">
+
+                    <label for="data_file">
+                        Choose your file
+                    </label>
+
+                    <br>
+
+                    <input
+                        type="file"
+                        id="data_file"
+                        name="data_file"
+                        required
+                    >
+
+                    <br>
+
+                    <button type="submit">
+                        Upload File
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

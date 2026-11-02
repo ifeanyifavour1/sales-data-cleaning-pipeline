@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Review Sales Data</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="app-header">
+
+        <div class="logo">
+            SD
+        </div>
+
+        <div>
+
+            <h1 class="app-title">
+                Sales Data Cleaner
+            </h1>
+
+            <p class="subtitle">
+                Review what the system detected before cleaning your data.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="steps">
+
+        <div class="step done">
+            ✓ Upload
+        </div>
+
+        <div class="step active">
+            2. Preview
+        </div>
+
+        <div class="step">
+            3. Clean
+        </div>
+
+        <div class="step">
+            4. Download
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="tag">
+            Original Data
+        </span>
+
+        <h2>
+            Data Preview
+        </h2>
+
+        <p class="info-text">
+            These are the first rows of the uploaded file.
+            The original data has not been changed.
+        </p>
+
+        <div class="table-wrap">
+            {{ preview | safe }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>
+            Review Detected Columns
+        </h2>
+
+        <p class="info-text">
+            The system checked the column names, data types and
+            sample values to suggest how each column should be handled.
+            You can change the cleaning action if needed.
+        </p>
+
+
+        <form
+            action="/clean-data"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="file_id"
+                value="{{ file_id }}"
+            >
+
+
+            <div class="table-wrap review-table-wrap">
+
+                <table class="column-cleaning-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Column</th>
+                            <th>Sample Values</th>
+                            <th>Detected Type</th>
+                            <th>Confidence</th>
+                            <th>Cleaning Action</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for column in detected_columns %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    {{ column.column }}
+                                </strong>
+
+                                <input
+                                    type="hidden"
+                                    name="column_name"
+                                    value="{{ column.column }}"
+                                >
+
+                            </td>
+
+
+                            <td class="sample-values">
+
+                                {{ column.sample_values }}
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="type-badge">
+                                    {{ column.type | title }}
+                                </span>
+
+                                <div class="detection-reason">
+                                    {{ column.reason }}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="confidence-badge confidence-{{ column.confidence }}"
+                                >
+                                    {{ column.confidence | title }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="custom-clean-select">
+
+                                    <input
+                                        type="hidden"
+                                        name="clean_action"
+                                        class="clean-action-value"
+                                        value="{{ column.suggested_action }}"
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        class="custom-select-trigger"
+                                        aria-expanded="false"
+                                        aria-controls="clean-menu-{{ loop.index }}"
+                                    >
+
+                                        <span class="custom-select-label">
+
+                                            {% if column.suggested_action == "product" %}
+
+                                                Clean as product name
+
+                                            {% elif column.suggested_action == "text" %}
+
+                                                Clean as text
+
+                                            {% elif column.suggested_action == "date" %}
+
+                                                Clean as date
+
+                                            {% else %}
+
+                                                Keep unchanged
+
+                                            {% endif %}
+
+                                        </span>
+
+
+                                        <span class="custom-select-arrow">
+                                            ▼
+                                        </span>
+
+                                    </button>
+
+
+                                    <div
+                                        class="custom-select-menu"
+                                        id="clean-menu-{{ loop.index }}"
+                                    >
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'keep' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="keep"
+                                        >
+                                            Keep unchanged
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'product' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="product"
+                                        >
+                                            Clean as product name
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'text' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="text"
+                                        >
+                                            Clean as text
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="custom-select-option
+                                            {% if column.suggested_action == 'date' %}
+                                                selected-option
+                                            {% endif %}"
+                                            data-value="date"
+                                        >
+                                            Clean as date
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="cleaning-group">
+
+                <h3>
+                    Automatic Duplicate Cleaning
+                </h3>
+
+                <p class="info-text">
+                    Exact duplicate rows will be checked and removed
+                    after the selected cleaning actions are finished.
+                </p>
+
+            </div>
+
+
+            <div class="clean-actions">
+
+                <button
+                    type="submit"
+                    class="clean-all-button"
+                >
+                    Clean All
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function closeCleaningDropdown(dropdown) {
+
+        dropdown.classList.remove(
+            "open"
+        );
+
+        const trigger =
+            dropdown.querySelector(
+                ".custom-select-trigger"
+            );
+
+        trigger.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+
+    document
+        .querySelectorAll(
+            ".custom-clean-select"
+        )
+        .forEach(function (dropdown) {
+
+            const trigger =
+                dropdown.querySelector(
+                    ".custom-select-trigger"
+                );
+
+            const label =
+                dropdown.querySelector(
+                    ".custom-select-label"
+                );
+
+            const hiddenInput =
+                dropdown.querySelector(
+                    ".clean-action-value"
+                );
+
+            const options =
+                dropdown.querySelectorAll(
+                    ".custom-select-option"
+                );
+
+
+            trigger.addEventListener(
+                "click",
+                function () {
+
+                    const wasOpen =
+                        dropdown.classList.contains(
+                            "open"
+                        );
+
+
+                    document
+                        .querySelectorAll(
+                            ".custom-clean-select"
+                        )
+                        .forEach(function (otherDropdown) {
+
+                            closeCleaningDropdown(
+                                otherDropdown
+                            );
+
+                        });
+
+
+                    if (!wasOpen) {
+
+                        dropdown.classList.add(
+                            "open"
+                        );
+
+                        trigger.setAttribute(
+                            "aria-expanded",
+                            "true"
+                        );
+                    }
+                }
+            );
+
+
+            options.forEach(
+                function (option) {
+
+                    option.addEventListener(
+                        "click",
+                        function () {
+
+                            hiddenInput.value =
+                                option.dataset.value;
+
+                            label.textContent =
+                                option.textContent.trim();
+
+
+                            options.forEach(
+                                function (otherOption) {
+
+                                    otherOption.classList.remove(
+                                        "selected-option"
+                                    );
+
+                                }
+                            );
+
+
+                            option.classList.add(
+                                "selected-option"
+                            );
+
+
+                            closeCleaningDropdown(
+                                dropdown
+                            );
+                        }
+                    );
+
+                }
+            );
+
+        });
+
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                !event.target.closest(
+                    ".custom-clean-select"
+                )
+            ) {
+
+                document
+                    .querySelectorAll(
+                        ".custom-clean-select"
+                    )
+                    .forEach(function (dropdown) {
+
+                        closeCleaningDropdown(
+                            dropdown
+                        );
+
+                    });
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+
+                document
+                    .querySelectorAll(
+                        ".custom-clean-select"
+                    )
+                    .forEach(function (dropdown) {
+
+                        closeCleaningDropdown(
+                            dropdown
+                        );
+
+                    });
+            }
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

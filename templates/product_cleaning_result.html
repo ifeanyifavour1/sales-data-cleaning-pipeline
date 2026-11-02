@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Cleaning Result</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="page">
+
+        <div class="app-header">
+            <div class="logo">SD</div>
+
+            <div>
+                <h1 class="app-title">Sales Data Cleaner</h1>
+                <p class="subtitle">
+                    Review the cleaning result.
+                </p>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step done">✓ Upload</div>
+            <div class="step done">✓ Preview</div>
+            <div class="step active">3. Clean</div>
+            <div class="step">4. Download</div>
+        </div>
+
+        <div class="card">
+
+            <span class="tag">
+                {{ product_column }}
+            </span>
+
+            <h2>Product Name Cleaning</h2>
+
+            <p class="info-text">
+                Compare the original values with the cleaned values below.
+            </p>
+
+        </div>
+
+        <div class="two-column">
+
+            <div class="card before-card">
+
+                <h2>Before</h2>
+
+                <div class="table-wrap">
+                    {{ before_preview | safe }}
+                </div>
+
+            </div>
+
+            <div class="card after-card">
+
+                <h2>After</h2>
+
+                <div class="table-wrap">
+                    {{ after_preview | safe }}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Cleaned Data Preview</h2>
+
+            <p class="info-text">
+                This is a preview of the dataset after cleaning the selected product column.
+            </p>
+
+            <div class="table-wrap">
+                {{ cleaned_preview | safe }}
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
