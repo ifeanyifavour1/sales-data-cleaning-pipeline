@@ -27,7 +27,9 @@ body {
 .logo {
     width: 48px;
     height: 48px;
+
     border-radius: 12px;
+
     background: #2563eb;
     color: white;
 
@@ -46,7 +48,9 @@ body {
 
 .subtitle {
     color: #6b7280;
+
     margin-top: 5px;
+
     line-height: 1.5;
 }
 
@@ -55,14 +59,19 @@ body {
 .steps {
     display: flex;
     justify-content: space-between;
+
     margin: 25px 0 35px;
+
     gap: 10px;
 }
 
 .step {
     flex: 1;
+
     text-align: center;
+
     padding: 10px;
+
     border-radius: 10px;
 
     background: #e5e7eb;
@@ -85,7 +94,9 @@ body {
 
 .card {
     background: white;
+
     border-radius: 16px;
+
     padding: 24px;
     margin-bottom: 24px;
 
@@ -109,8 +120,11 @@ body {
 .upload-box {
     border: 2px dashed #93c5fd;
     border-radius: 14px;
+
     padding: 35px;
+
     text-align: center;
+
     background: #f8fbff;
 }
 
@@ -138,7 +152,7 @@ button:hover {
     background: #1d4ed8;
 }
 
-/* Select */
+/* Normal select */
 
 select {
     padding: 10px 12px;
@@ -147,9 +161,13 @@ select {
     border: 1px solid #cbd5e1;
 
     margin-right: 10px;
+
     min-width: 200px;
 
     background: white;
+    color: #17203a;
+
+    font-size: 16px;
 }
 
 /* Tables */
@@ -159,16 +177,24 @@ select {
     overflow-x: auto;
 }
 
+.review-table-wrap {
+    overflow: visible;
+}
+
 table.dataframe {
     width: 100%;
+
     border-collapse: collapse;
+
     margin-top: 15px;
 }
 
 table.dataframe th,
 table.dataframe td {
     border: 1px solid #dbe1ea;
+
     padding: 10px;
+
     text-align: left;
     vertical-align: top;
 }
@@ -186,7 +212,9 @@ table.dataframe tr:nth-child(even) {
 
 .two-column {
     display: grid;
+
     grid-template-columns: 1fr 1fr;
+
     gap: 20px;
 }
 
@@ -211,6 +239,7 @@ table.dataframe tr:nth-child(even) {
 
 .info-text {
     color: #64748b;
+
     line-height: 1.6;
 }
 
@@ -222,6 +251,7 @@ table.dataframe tr:nth-child(even) {
 
 .cleaning-group {
     margin-top: 28px;
+
     padding: 22px;
 
     background: #f8fafc;
@@ -271,6 +301,7 @@ table.dataframe tr:nth-child(even) {
 
 .column-option:hover {
     border-color: #2563eb;
+
     background: #f1f5ff;
 }
 
@@ -285,6 +316,7 @@ table.dataframe tr:nth-child(even) {
 
 .column-option:has(input:checked) {
     border-color: #2563eb;
+
     background: #eef4ff;
 }
 
@@ -313,6 +345,7 @@ table.dataframe tr:nth-child(even) {
 
 .clean-all-button:hover {
     background: #1d4ed8;
+
     transform: translateY(-1px);
 }
 
@@ -349,6 +382,7 @@ table.dataframe tr:nth-child(even) {
 
 .summary-item strong {
     font-size: 22px;
+
     color: #172033;
 }
 
@@ -385,6 +419,11 @@ table.dataframe tr:nth-child(even) {
 
 .column-cleaning-table tbody tr:hover {
     background: #f8fafc;
+}
+
+.column-cleaning-table th:last-child,
+.column-cleaning-table td:last-child {
+    min-width: 270px;
 }
 
 /* Sample values */
@@ -454,27 +493,123 @@ table.dataframe tr:nth-child(even) {
     color: #991b1b;
 }
 
-/* Cleaning action dropdown */
+/* Custom cleaning dropdown */
 
-.clean-type-select {
-    min-width: 170px;
+.custom-clean-select {
+    position: relative;
 
-    padding: 9px 10px;
+    width: 250px;
+    min-width: 250px;
+}
 
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
+.custom-select-trigger {
+    width: 100%;
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 11px 14px;
 
     background: white;
     color: #17203a;
 
-    font-size: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    font-size: 16px;
+    font-weight: normal;
+
+    text-align: left;
 
     cursor: pointer;
 }
 
-.clean-type-select:focus {
-    outline: 2px solid #bfdbfe;
+.custom-select-trigger:hover {
+    background: #f8fafc;
+
     border-color: #2563eb;
+}
+
+.custom-select-trigger:focus {
+    outline: 2px solid #bfdbfe;
+
+    border-color: #2563eb;
+}
+
+.custom-select-arrow {
+    flex-shrink: 0;
+
+    color: #17203a;
+
+    font-size: 13px;
+}
+
+.custom-select-menu {
+    display: none;
+
+    position: absolute;
+
+    top: calc(100% + 5px);
+    left: 0;
+
+    width: 100%;
+
+    background: white;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+
+    overflow: hidden;
+
+    z-index: 1000;
+}
+
+.custom-clean-select.open .custom-select-menu {
+    display: block;
+}
+
+.custom-select-option {
+    display: block;
+
+    width: 100%;
+
+    padding: 13px 14px;
+
+    background: white;
+    color: #17203a;
+
+    border: none;
+    border-radius: 0;
+
+    font-size: 16px;
+    font-weight: normal;
+
+    line-height: 1.4;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.custom-select-option:hover,
+.custom-select-option:focus {
+    background: #eff6ff;
+    color: #1d4ed8;
+
+    outline: none;
+}
+
+.custom-select-option.selected-option {
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    font-weight: 600;
 }
 
 /* Mobile */
@@ -483,6 +618,7 @@ table.dataframe tr:nth-child(even) {
 
     .page {
         width: 94%;
+
         margin-top: 20px;
     }
 
@@ -508,6 +644,7 @@ table.dataframe tr:nth-child(even) {
 
     select {
         width: 100%;
+
         margin-bottom: 12px;
         margin-right: 0;
     }
@@ -528,8 +665,23 @@ table.dataframe tr:nth-child(even) {
         width: 100%;
     }
 
+    .review-table-wrap {
+        overflow-x: auto;
+    }
+
     .column-cleaning-table {
-        min-width: 850px;
+        min-width: 900px;
+    }
+
+    .custom-clean-select {
+        width: 100%;
+        min-width: 240px;
+    }
+
+    .custom-select-menu {
+        position: static;
+
+        margin-top: 5px;
     }
 
     .cleaning-summary {

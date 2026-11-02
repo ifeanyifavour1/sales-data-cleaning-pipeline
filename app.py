@@ -2,7 +2,12 @@ from pathlib import Path
 from uuid import uuid4
 
 import pandas
-from flask import Flask, render_template, request
+from flask import (
+    Flask,
+    render_template,
+    request,
+    send_file,
+)
 
 from cleaning_logics.detection import detect_columns
 from cleaning_logics.pipeline import clean_sales_data
@@ -95,8 +100,7 @@ def home():
                 result["suggested_action"] = "date"
 
             else:
-                # Numbers, identifiers and unknown columns
-                # are preserved for now
+                # Numbers and identifiers are preserved
                 result["suggested_action"] = "keep"
 
         file_id = uuid4().hex
@@ -148,6 +152,7 @@ def clean_all_data():
         )
 
     try:
+
         sales_data = pandas.read_csv(
             temporary_file
         )
@@ -235,6 +240,18 @@ def clean_all_data():
         preserved_columns
     )
 
+    # Save the complete cleaned data
+    # so it can be downloaded later.
+    cleaned_file = (
+        TEMP_FOLDER /
+        f"{file_id}_cleaned.csv"
+    )
+
+    cleaned_data.to_csv(
+        cleaned_file,
+        index=False
+    )
+
     before_preview = (
         sales_data
         .head(10)
@@ -253,6 +270,30 @@ def clean_all_data():
         after_preview=after_preview,
         summary=summary,
         file_id=file_id
+    )
+
+
+@app.route(
+    "/download/<file_id>"
+)
+def download_cleaned_csv(file_id):
+
+    cleaned_file = (
+        TEMP_FOLDER /
+        f"{file_id}_cleaned.csv"
+    )
+
+    if not cleaned_file.exists():
+        return (
+            "The cleaned file could not be found. "
+            "Please clean the file again."
+        ), 404
+
+    return send_file(
+        cleaned_file,
+        as_attachment=True,
+        download_name="cleaned_sales_data.csv",
+        mimetype="text/csv"
     )
 
 
